@@ -6,7 +6,6 @@ This code consist of several parts/folder
 3. ipynb_file : some ipynb file that i used in scraping, clustering
 4. static : website's static content css, javascript, and image
 5. templates : html file for displaying website
-6. venv : virtual environment folder
 
 files
 1. __init__.py
