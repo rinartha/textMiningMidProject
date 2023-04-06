@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>News Clustering</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css">
+
+<link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet"  type='text/css'>
+
+<link rel="stylesheet" type="text/css" href="../static/css/util.css">
+<link rel="stylesheet" type="text/css" href="../static/css/main.css">
+<link rel="stylesheet" type="text/css" href="../static/css/dataTables.bootstrap4.min.css">
+<body onload="checkMaskImage()">
+    <div class="container-full">
+        <div class="wrap-full">
+            <a href="./">
+                <i class="fa fa-home fa-4x" aria-hidden="true"></i>
+            </a>
+            <div class="card">
+                <div class="card-header">
+                    <a data-toggle="collapse" href="#collapseCard" aria-expanded="true" aria-controls="collapseCard" id="heading-example">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <h3>Process clustering</h3>
+                    </a>
+                </div>
+                <div id="collapseCard" class="collapse" aria-labelledby="heading-example">
+                    <div class="card-body" id="collapseCard">
+                        <form action="./clustering" method="POST">
+                            <div class="row my-md-3">
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Choose column
+                                        </div>
+                                        <div class="card-body">
+                                            {% for column in titles %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="column" value="{{column}}" {% if dataForm[0] == column %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                    {{column}}
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Cleaning
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="expansion" value="1" {% if dataForm[1] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Expansion (you're -> you are; i'm -> i am)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_email" value="1" {% if dataForm[2] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove email
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_html" value="1" {% if dataForm[3] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove html tag
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_special" value="1" {% if dataForm[4] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove special char
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_accent" value="1" {% if dataForm[5] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove accented char
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_regex" value="1" {% if dataForm[6] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Clean text with regex
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_stop" value="1" {% if dataForm[7] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove stopword spacy-lemma
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rm_stopbasic" value="1" {% if dataForm[14] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Remove stopword
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Vectorizer
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="vectorizer" value="tfidf" checked>
+                                                <label class="form-check-label">
+                                                TF-IDF vectorizer
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Clustering
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="clustering" value="lda" checked>
+                                                <label class="form-check-label">
+                                                LDA Clustering
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Number Cluster
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="auto" {% if dataForm[13] == "auto" or dataForm == "" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Auto
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="1" {% if dataForm[13] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                1 cluster
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="2" {% if dataForm[13] == "2" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                2 cluster
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="3" {% if dataForm[13] == "3" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                3 cluster
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="4" {% if dataForm[13] == "4" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                4 cluster
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="num_of_cluster" value="5" {% if dataForm[13] == "5" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                5 cluster
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 my-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Plotting
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" name="word_cloud" id="maskImage" onchange="checkMaskImage()" {% if dataForm[12] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Word Cloud
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="word_frequency" value="1" {% if dataForm[11] == "1" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                Word Frequency
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row my-md-3 d-none" id="maskImageDisplay">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Image mask
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="selectImage" value="square" {% if dataForm[10] == "square" or dataForm =="" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                <img src="../static/image/square.png" width="240px" />
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="selectImage" value="circle" {% if dataForm[10] == "circle" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                <img src="../static/image/circle.png" width="240px" />
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="selectImage" value="twitter" {% if dataForm[10] == "twitter" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                <img src="../static/image/twitter.png" width="240px" />
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="selectImage" value="cloud" {% if dataForm[10] == "cloud" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                    <img src="../static/image/cloud.png" width="240px" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container-contact100-form-btn">
+                                <button class="contact100-form-btn" onclick="disableScreen()">
+                                    <span>
+                                        Submit
+                                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-md-3">
+                {% if word_cloud %}
+                {% for cluster in range(number_of_cluster) %}
+                <div class="col-sm-4 my-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Word cloud {{cluster+1}}
+                        </div>
+                        <div class="card-body">
+                            <label class="form-check-label">
+                                <img src="../static/image_result/word_cloud_{{cluster+1}}.png" class="magnify" width="300px" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="row my-md-3">
+                {% if word_frequency %}
+                {% for cluster in range(number_of_cluster) %}
+                <div class="col-sm-6 my-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Frequency distribution {{cluster+1}}
+                        </div>
+                        <div class="card-body">
+                            <label class="form-check-label">
+                                <canvas id="myChart{{cluster+1}}" class="magnify" style="width:550px"></canvas>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="row my-md-3">
+                <h3>Sample Data</h3>
+                {% for table in tables %}
+                    {{ table|safe }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+                        
+        <script src="../static/js/jquery-3.6.4.min.js"></script>
+        <script src="../static/js/bootstrap.min.js"></script>
+        <script src="../static/js/custom.js"></script>
+        <script type="text/javascript" src="../static/js/jquery.magnifier.js"></script>
+
+        <script src="../static/js/jquery.dataTables.min.js"></script>
+        <script src="../static/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+        <script>
+            // Basic example
+            jQuery(document).ready(function ($) {
+                $('#data_table').DataTable({
+                    "paging": true, // false to disable pagination (or any other option)
+                    "pageLength": 5,
+                    lengthMenu: [[5, 10, 20, 50], [5, 10, 20, 50]]
+                });
+                $('.dataTables_length').addClass('bs-select');
+                });
+        </script>
+        <script>
+            function disableScreen() {
+                // creates <div class="overlay"></div> and 
+                // adds it to the DOM
+                var div= document.createElement("div");
+                div.className += "overlay";
+                var div2= document.createElement("div");
+                div2.className += "loader";
+                div.appendChild(div2);
+                document.body.appendChild(div);
+            }
+        </script>
+        {% if word_frequency %}
+        {% for cluster in range(number_of_cluster) %}
+        <script>
+            var xValues = {{ word_freq[cluster]|tojson }};
+            var yValues = {{ number_word[cluster] }};
+            var barColors = "blue";
+
+            new Chart("myChart{{cluster+1}}", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+                }]
+            },
+            options: {
+                legend: {display: false},
+                title: {
+                display: true,
+                text: "Word Frequency (top 30)"
+                }
+            }
+            });
+        </script>
+        {% endfor %}
+        {% endif %}
+</body>
+</html>
