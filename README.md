@@ -1,4 +1,4 @@
-# This repository is used for text mining project 1
+# This repository is used for text mining midterm project
 
 this code consist of several parts/folder
 1. raw_dataset : (from 01-02-2023 to 31-03-2023 from taiwannews.com.tw
