@@ -126,9 +126,21 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="clustering" value="lda" checked>
+                                                <input class="form-check-input" type="radio" name="clustering" value="lda" {% if dataForm[9] == "lda" %} checked {% endif %}>
                                                 <label class="form-check-label">
                                                 LDA Clustering
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="clustering" value="kmeans"  {% if dataForm[9] == "kmeans" or dataForm=="" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                K-means Clustering
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="clustering" value="kmedoid" {% if dataForm[9] == "kmedoid" %} checked {% endif %}>
+                                                <label class="form-check-label">
+                                                K-medoid Clustering
                                                 </label>
                                             </div>
                                         </div>
@@ -248,6 +260,28 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row my-md-3">
+                {% if word_cloud %}
+                {% for i in range(3) %}
+                <div class="col-sm-4 my-2">
+                    <div class="card">
+                        <div class="card-header">
+                            {% if i == 0 %} Unigram {% endif %}
+                            {% if i == 1 %} Bigram {% endif %}
+                            {% if i == 2 %} Trigram {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <label class="form-check-label">
+                                <img src="../static/image_result/word_n_gram_{{i+1}}.png" class="magnify" width="300px" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+
             <div class="row my-md-3">
                 {% if word_cloud %}
                 {% for cluster in range(number_of_cluster) %}

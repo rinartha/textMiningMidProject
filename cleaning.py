@@ -39,27 +39,27 @@ class cleaning():
 
   def cleaning_process(self, df, column, expansion=False, rm_email=False, rm_html=False, rm_special=False, rm_accent=False, rm_regex=False, rm_stop=False, rm_stopbasic=False):
     if expansion:
-      df[column] = df[column].apply(lambda x: th.cont_exp(x)) #you're -> you are; i'm -> i am
+      df[column] = df[column].apply(lambda x: th.cont_exp(str(x))) #you're -> you are; i'm -> i am
     if rm_email:
-      df[column] = df[column].apply(lambda x: th.remove_emails(x))
+      df[column] = df[column].apply(lambda x: th.remove_emails(str(x)))
     if rm_html:
-      df[column] = df[column].apply(lambda x: th.remove_html_tags(x))
+      df[column] = df[column].apply(lambda x: th.remove_html_tags(str(x)))
 
     if rm_special:
-      df[column] = df[column].apply(lambda x: th.remove_special_chars(x))
+      df[column] = df[column].apply(lambda x: th.remove_special_chars(str(x)))
     if rm_accent:
-      df[column] = df[column].apply(lambda x: th.remove_accented_chars(x))
+      df[column] = df[column].apply(lambda x: th.remove_accented_chars(str(x)))
 
     if rm_regex:
-      df[column] = df[column].apply(lambda x: re.sub(r'[^\w|^\']',' ',x))
-      df[column] = df[column].apply(lambda x: re.sub("\d+", "",x))
+      df[column] = df[column].apply(lambda x: re.sub(r'[^\w|^\']',' ',str(x)))
+      df[column] = df[column].apply(lambda x: re.sub("\d+", "",str(x)))
 
     #df[column] = df[column].apply(lambda x: th.make_base(x)) #ran -> run, 
     #df[column] = df[column].apply(lambda x: th.spelling_correction(x).raw_sentences[0]) #seplling -> spelling
     if rm_stop:
-      df[column] = df[column].apply(lambda x: self.spacy_preprocess(x, pos_select = ["VERB", "NOUN", "ADJ"]))
+      df[column] = df[column].apply(lambda x: self.spacy_preprocess(str(x), pos_select = ["VERB", "NOUN", "ADJ"]))
 
     if rm_stopbasic:
-      df[column] = df[column].apply(lambda x: self.remove_stopword(x))
+      df[column] = df[column].apply(lambda x: self.remove_stopword(str(x)))
 
     return df

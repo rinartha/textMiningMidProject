@@ -2,7 +2,8 @@ from sklearn.decomposition import LatentDirichletAllocation
 # Parameters tuning using Grid Search
 from sklearn.model_selection import GridSearchCV
 import numpy as np
-
+from sklearn.cluster import KMeans
+from sklearn_extra.cluster import KMedoids
 
 
 class lda_clustering():
@@ -27,7 +28,7 @@ class lda_clustering():
 
   def fit_transform(self, number_of_topic, tfidf_matrix):
     # LDA model fitting for best parameter
-    lda_model= LatentDirichletAllocation(n_components=number_of_topic,max_iter=1000,random_state=42, n_jobs=-1, verbose=0)
+    lda_model= LatentDirichletAllocation(n_components=number_of_topic,max_iter=1000,random_state=1, n_jobs=-1, verbose=0)
     #lda.fit(document_term_matrix)
     lda_model.fit(tfidf_matrix)
     self.lda_result=lda_model.transform(tfidf_matrix)
@@ -38,4 +39,27 @@ class lda_clustering():
     for index in range (len(self.lda_result)):
       cluster.append(np.argmax(self.lda_result[index]))
     dataframe['cluster'] = cluster
+    return dataframe
+
+class kmeans_clustering():
+  def k_means(self, num_clusters, feature_matrix):
+    km = KMeans(n_clusters=num_clusters, n_init=500, random_state = 1,
+                max_iter=10000)
+    km.fit(feature_matrix)
+    self.clusters = km.labels_
+    return km, self.clusters, num_clusters
+
+  def assign_cluster(self, dataframe):
+    dataframe['cluster'] = self.clusters
+    return dataframe
+
+class kmedoid_clustering():
+  def k_medoids(self, num_clusters, feature_matrix):
+    kmedoids = KMedoids(n_clusters=num_clusters, init='k-medoids++', random_state=1, max_iter=10000)
+    kmedoids.fit(feature_matrix)
+    self.clusters = kmedoids.labels_
+    return kmedoids, self.clusters, num_clusters
+
+  def assign_cluster(self, dataframe):
+    dataframe['cluster'] = self.clusters
     return dataframe

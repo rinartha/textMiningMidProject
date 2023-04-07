@@ -11,12 +11,13 @@ files
 1. __init__.py
 2. cleaning.py : class for cleaning dataset
 3. display_plot : class for plot word cloud, frequency distribution
-4. model_clustering : class for clustering algorithm
+4. model_clustering : class for clustering algorithm k-mean, k-medoid, LDA
+5. ngram.py : class for n-gram
 5. route.py : main function
 6. run.py
 7. vectorizer.py : class for vectorizer algorithm
 
-To run in your local computer you need to install flask and some libraries that are used in this project. I use virtual environment to run this code.
+To run this program in your local computer you need to install flask and some libraries that are used in this project. I use virtual environment to run this code.
 
 
 This project is created by

@@ -4,6 +4,7 @@ from midtermProject.model_clustering import *
 from midtermProject.cleaning import *
 from midtermProject.vectorizer import *
 from midtermProject.display_plot import *
+from midtermProject.ngram import *
 import pandas as pd
 import os
 
@@ -13,7 +14,7 @@ def index():
     if request.method == 'POST':
         uploaded_file = request.files['dataset']
         global df
-        df = pd.read_csv(uploaded_file)
+        df = pd.read_csv(uploaded_file, sep=",", header=0)
         return render_template("clustering.html", 
         tables=[df.to_html(classes='table table-striped table-responsive table-bordered', border=0, table_id="data_table", justify="left")],
         titles=df.columns.values, 
@@ -62,24 +63,53 @@ def process():
                     boolean_input(rm_special), boolean_input(rm_accent), 
                     boolean_input(rm_regex), boolean_input(rm_stop), boolean_input(rm_stopbasic))
 
+
+        mask_image = "./static/image/"+str(selectImage)+".png"
+        ngram = custom_ngram()
+        unigram = ngram.ngram_form_text(cleaning_df[column_name], 1)
+        bigram = ngram.ngram_form_text(cleaning_df[column_name], 2)
+        trigram = ngram.ngram_form_text(cleaning_df[column_name], 3)
+        file_name_1 = "./static/image_result/word_n_gram_1.png"
+        file_name_2 = "./static/image_result/word_n_gram_2.png"
+        file_name_3 = "./static/image_result/word_n_gram_3.png"
+        ngram_plot = display_plot()
+        ngram_plot.plot_wordcloud_for_cluster("Unigram", unigram, mask_image, file_name_1)
+        ngram_plot.plot_wordcloud_for_cluster("Bigram", bigram, mask_image, file_name_2)
+        ngram_plot.plot_wordcloud_for_cluster("Trigram", trigram, mask_image, file_name_3)
+
         tfidf = vectorizer(cleaning_df.copy(), column_name)
 
-        lda = lda_clustering()
-        if num_of_cluster == "auto":
-            lda_model_result, lda_model, number_of_cluster = lda.auto_fit_transform(tfidf.get_term_matrix())
+        if clustering == "lda":
+            lda = lda_clustering()
+            if num_of_cluster == "auto":
+                lda_model_result, lda_model, number_of_cluster = lda.auto_fit_transform(tfidf.get_term_matrix())
+            else:
+                lda_model_result, lda_model, number_of_cluster = lda.fit_transform(int(num_of_cluster), tfidf.get_term_matrix())
+            
+            new_df = lda.assign_cluster(cleaning_df.copy())
+        elif clustering == "kmeans":
+            kmeans = kmeans_clustering()
+            if num_of_cluster == "auto":
+                kmeans_model_result, kmeans_model, number_of_cluster = kmeans.auto_k_means(tfidf.get_term_matrix())
+            else:
+                kmeans_model_result, kmeans_model, number_of_cluster = kmeans.k_means(int(num_of_cluster), tfidf.get_term_matrix())
+            
+            new_df = kmeans.assign_cluster(cleaning_df.copy())
         else:
-            lda_model_result, lda_model, number_of_cluster = lda.fit_transform(int(num_of_cluster), tfidf.get_term_matrix())
-        
-        new_df = lda.assign_cluster(cleaning_df.copy())
+            kmedoid = kmedoid_clustering()
+            if num_of_cluster == "auto":
+                kmedoid_model_result, kmedoid_model, number_of_cluster = kmedoid.auto_k_medoids(tfidf.get_term_matrix())
+            else:
+                kmedoid_model_result, kmedoid_model, number_of_cluster = kmedoid.k_medoids(int(num_of_cluster), tfidf.get_term_matrix())
+            
+            new_df = kmedoid.assign_cluster(cleaning_df.copy())
 
         word_freq = []
         number_word = []
         for cluster_index in range(number_of_cluster):
             this_wordlist = ''
-            this_seg_list = ''
             title = f"Word for Cluster {cluster_index+1}"
             file_name_wc = "./static/image_result/word_cloud_"+str(int(cluster_index)+1)+".png"
-            mask_image = "./static/image/"+str(selectImage)+".png"
             this_wordlist = new_df[new_df['cluster'] == cluster_index][column_name]
             this_seg_list=' '.join(this_wordlist) # convert list into string seperated with space character
             wc = display_plot()
