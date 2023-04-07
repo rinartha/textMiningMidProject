@@ -1,6 +1,7 @@
 from nltk import ngrams
 import nltk
 
+# n gram class for unigram, bigram and trigram
 class custom_ngram():
   def ngram_form_text(self, list_of_text, n):
     text=' '.join(list_of_text)
