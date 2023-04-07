@@ -3,10 +3,9 @@
 This code consist of several parts/folder
 1. dataset : cleaned dataset for clustering process
 2. ipynb_file : some ipynb file that i used in scraping, clustering (google colab file)
-3. raw_dataset : (from 01-02-2023 to 31-03-2023 from taiwannews.com.tw)
+3. raw_dataset : scraped result (from 01-02-2023 to 31-03-2023 from taiwannews.com.tw)
 4. static : website's static content css, javascript, and image
 5. templates : html file for displaying website
-6. venv : virtual environment
 
 files
 1. __init__.py
@@ -17,7 +16,10 @@ files
 6. run.py
 7. vectorizer.py : class for vectorizer algorithm
 
-this project is created by
+To run in your local computer you need to install flask and some libraries that are used in this project. I use virtual environment to run this code.
+
+
+This project is created by
 group 18
 
 Regards,
