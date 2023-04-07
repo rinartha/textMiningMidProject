@@ -41,7 +41,16 @@ class lda_clustering():
     dataframe['cluster'] = cluster
     return dataframe
 
+# class k means clustering
 class kmeans_clustering():
+  def auto_k_means(self, feature_matrix):
+    grid_params = {'n_clusters' : list(range(2,5))}
+    km = GridSearchCV(KMeans(max_iter=10000), param_grid=grid_params)
+    km.fit(feature_matrix)
+    best_km_model = km.best_estimator_
+    self.clusters = best_km_model.labels_
+    return km, self.clusters, km.best_params_['n_clusters']
+
   def k_means(self, num_clusters, feature_matrix):
     km = KMeans(n_clusters=num_clusters, n_init=500, random_state = 1,
                 max_iter=10000)
@@ -53,7 +62,16 @@ class kmeans_clustering():
     dataframe['cluster'] = self.clusters
     return dataframe
 
+# class k medoid clustering
 class kmedoid_clustering():
+  def auto_k_medoids(self, feature_matrix):
+    grid_params = {'n_clusters' : list(range(2,5))}
+    kmedoids = GridSearchCV(KMedoids(), scoring='accuracy', param_grid=grid_params)
+    kmedoids.fit(feature_matrix)
+    best_kmedoids_model = kmedoids.best_estimator_
+    self.clusters = best_kmedoids_model.labels_
+    return kmedoids, self.clusters, kmedoids.best_params_['n_clusters']
+
   def k_medoids(self, num_clusters, feature_matrix):
     kmedoids = KMedoids(n_clusters=num_clusters, init='k-medoids++', random_state=1, max_iter=10000)
     kmedoids.fit(feature_matrix)
